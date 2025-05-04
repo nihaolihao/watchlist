@@ -68,7 +68,7 @@ def index():
     # return 'Welcome to My Watchlist!'
     user = User.query.first()    # 取出第一个用户
     movies = Movie.query.all()   # 取出所有电影
-    return render_template('index.html',name=name,movies=movies)
+    return render_template('index.html',movies=movies)
 
 @app.route('/user/<name>')
 def user_page(name):
@@ -82,6 +82,17 @@ def test_url_for():
     print(url_for('test_url_for'))
     print(url_for('test_url_for', num=2))
     return 'Test page'
+
+@app.errorhandler(404)  # 定义404错误处理函数
+def page_not_found(e):
+    user = User.query.first()    # 取出第一个用户
+    return render_template('404.html'), 404  # 返回404页面
+
+# 模板上下文处理函数
+@app.context_processor
+def inject_user():  # 定义模板上下文处理函数
+    user = User.query.first()    # 取出第一个用户
+    return dict(user=user)  # 返回字典
 
 # 定义虚拟数据
 name = 'lihaonihao'
