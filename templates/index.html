@@ -5,7 +5,7 @@
 {# 使用length 过滤器获取电影列表长度 #}
 <p>{{ movies|length }} Titiles</p>
 {% if current_user.is_authenticated %}
-<form method="post">
+<form method="POST">
     Name <input type="text" name="title" autocapitalize="off" required>
     Year <input type="text" name="year" autocapitalize="off" required>
     <input class="btn" type="submit" value="Add">

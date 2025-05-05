@@ -239,7 +239,7 @@ def settings():
         db.session.commit()
         flash('Settings updated.')  # 显示成功信息
         return redirect(url_for('index'))  # 重定向回首页
-    
+
     return render_template('settings.html')  # 设置页面
 
 if __name__ == '__main__':
