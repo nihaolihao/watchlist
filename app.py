@@ -2,7 +2,7 @@
 import os
 import sys
 import click
-from flask import Flask, url_for,render_template
+from flask import Flask, url_for,render_template,redirect,flash,request
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -59,17 +59,36 @@ def forge():
     click.echo('Done.')
 
 
+app.config['SECRET_KEY'] = 'dev'  # 设置密钥
 
-
-@app.route('/')
+@app.route('/',methods=['GET','POST'])
 @app.route('/index')
 @app.route('/home')
 def index():
     # return 'Welcome to My Watchlist!'
+    if request.method == 'POST':
+        title = request.form['title']
+        year = request.form['year']
+        if not title or not year or len(title) > 60 or len(year) > 4:
+            flash('Invalid input.')  # 显示错误信息
+            return redirect(url_for('index'))  # 重定向回首页
+        movie = Movie(title=title, year=year)
+        db.session.add(movie)
+        db.session.commit()
+        flash('Movie added.')  # 显示成功信息
+        return redirect(url_for('index'))  # 重定向回首页
+    
     user = User.query.first()    # 取出第一个用户
     movies = Movie.query.all()   # 取出所有电影
     return render_template('index.html',movies=movies)
 
+@app.route('/delete/<int:movie_id>',methods=['POST'])
+def delete(movie_id):
+    movie = Movie.query.get_or_404(movie_id)  # 根据电影ID取出电影，如果不存在则返回404错误
+    db.session.delete(movie)
+    db.session.commit()
+    flash('Item deleted.')  # 显示成功信息
+    return redirect(url_for('index'))  # 重定向回首页
 @app.route('/user/<name>')
 def user_page(name):
     return 'User: %s' % name
@@ -94,6 +113,22 @@ def inject_user():  # 定义模板上下文处理函数
     user = User.query.first()    # 取出第一个用户
     return dict(user=user)  # 返回字典
 
+@app.route('/movie/edit/<int:movie_id>', methods=['GET', 'POST'])
+def edit(movie_id):
+    movie = Movie.query.get_or_404(movie_id)  # 根据电影ID取出电影，如果不存在则返回404错误
+    if request.method == 'POST':
+        title = request.form['title']
+        year = request.form['year']
+        if not title or not year or len(title) > 60 or len(year) > 4:
+            flash('Invalid input.')  # 显示错误信息
+            return redirect(url_for('edit', movie_id=movie_id))  # 重定向回编辑页面
+        
+        movie.title = title
+        movie.year = year
+        db.session.commit()
+        flash('Item updated.')  # 显示成功信息
+        return redirect(url_for('index'))  # 重定向回首页
+    return render_template('edit.html', movie=movie)  # 编辑电影信息页面
 # 定义虚拟数据
 name = 'lihaonihao'
 movies = [
