@@ -1,7 +1,8 @@
 from flask import render_template, flash, redirect, url_for, request
 from watchlist.models import User, Movie
 from flask_login import login_user, logout_user, login_required, current_user
-from watchlist import app,db,load_user,login_manager
+from watchlist import app,db
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -53,9 +54,9 @@ def index():
         flash('Movie added.')  # 显示成功信息
         return redirect(url_for('index'))  # 重定向回首页
     
-    user = User.query.first()    # 取出第一个用户
+    user = current_user
     movies = Movie.query.all()   # 取出所有电影
-    return render_template('index.html',movies=movies)
+    return render_template('index.html',user=user,movies=movies)
 
 @app.route('/delete/<int:movie_id>',methods=['POST'])
 @login_required
