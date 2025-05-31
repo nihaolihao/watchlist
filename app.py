@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import sys
 app = Flask(__name__)
+app.debug = True  # 开启调试模式
 WIN = sys.platform.startswith('win')
 if WIN:
     prefix ='sqlite:///'
@@ -18,10 +19,17 @@ db = SQLAlchemy(app)
 def index():
     # return 'Welcome to My Watchlist!'
 
-    user = User.query.first()
     movies = Movie.query.all()
-    return render_template('index.html',user=user,movies=movies)
+    return render_template('index.html',movies=movies)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.context_processor
+def inject_user():
+    user = User.query.first()
+    return dict(user=user)
 
 # 创建数据库模型
 class User(db.Model):
