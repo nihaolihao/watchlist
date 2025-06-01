@@ -19,6 +19,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'da
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
+
 login_manager.login_view = 'login'
 @app.route('/',methods=['GET','POST'])
 def index():
