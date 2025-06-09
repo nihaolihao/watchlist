@@ -100,6 +100,6 @@ def settings():
 
     return render_template('settings.html')
 
-@app.template_context_processors
+@app.context_processor
 def inject_user():
     return dict(user=current_user)
