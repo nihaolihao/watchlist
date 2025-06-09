@@ -99,3 +99,7 @@ def settings():
         return redirect(url_for('index'))
 
     return render_template('settings.html')
+
+@app.template_context_processors
+def inject_user():
+    return dict(user=current_user)
